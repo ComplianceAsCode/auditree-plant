@@ -1,0 +1,4 @@
+{
+  "commit": {"gpgsign": true},
+  "user": {"signingKey": "...", "email": "...", "name": "..."}
+}
