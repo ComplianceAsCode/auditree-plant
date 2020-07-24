@@ -14,4 +14,4 @@
 # limitations under the License.
 """The Auditree tool for adding evidence to an evidence locker."""
 
-__version__ = '0.1.1'
+__version__ = '1.0.0'

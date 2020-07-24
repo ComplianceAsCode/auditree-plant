@@ -1,8 +1,10 @@
-# auditree-plant
-
 [![OS Compatibility][platform-badge]](#prerequisites)
 [![Python Compatibility][python-badge]][python-dl]
 [![pre-commit][pre-commit-badge]][pre-commit]
+[![Code validation](https://github.com/ComplianceAsCode/auditree-plant/workflows/format%20%7C%20lint%20%7C%20test/badge.svg)][lint-test]
+[![Upload Python Package](https://github.com/ComplianceAsCode/auditree-plant/workflows/PyPI%20upload/badge.svg)][pypi-upload]
+
+# auditree-plant
 
 The Auditree tool for adding external evidence.
 
@@ -25,13 +27,13 @@ site or installed using your package manager.
 Python version can be checked with:
 
 ```sh
-> python --version
+python --version
 ```
 
 or
 
 ```sh
-> python3 --version
+python3 --version
 ```
 
 The `plant` tool is available for download from [PyPI](https://pypi.org/).
@@ -42,23 +44,28 @@ It is best practice, but not mandatory, to run `plant` from a dedicated Python
 virtual environment.  Assuming that you have the Python [virtualenv][virtual-env]
 package already installed, you can create a virtual environment named `venv` by
 executing `virtualenv venv` which will create a `venv` folder at the location of
-where you executed the command.
-
-Assuming that you have a virtual environment and that virtual environment is in
-the current directory then to install a new instance of `prune`, activate
-your virtual environment and use `pip` to install `prune` like so:
+where you executed the command.  Alternatively you can use the python `venv` module
+to do the same.
 
 ```sh
-> . ./venv/bin/activate
-> pip install auditree-plant
+python3 -m venv venv
+```
+
+Assuming that you have a virtual environment and that virtual environment is in
+the current directory then to install a new instance of `plant`, activate
+your virtual environment and use `pip` to install `plant` like so:
+
+```sh
+. ./venv/bin/activate
+pip install auditree-plant
 ```
 
 As we add new features to `plant` you will want to upgrade your `plant`
 package.  To upgrade `plant` to the most recent version do:
 
 ```sh
-> . ./venv/bin/activate
-> pip install auditree-plant --upgrade
+. ./venv/bin/activate
+pip install auditree-plant --upgrade
 ```
 
 See [pip documentation][pip-docs] for additional options when using `pip`.
@@ -95,15 +102,15 @@ fetchers and checks.
 As most CLIs, Auditree `plant` comes with a help facility.
 
 ```sh
-> plant -h
+plant -h
 ```
 
 ```sh
-> plant push-remote -h
+plant push-remote -h
 ```
 
 ```sh
-> plant dry-run -h
+plant dry-run -h
 ```
 
 ### push-remote mode
@@ -114,15 +121,15 @@ key/value pairs as you need as part of the `--config` or as contents of your
 `--config-file`.
 
 ```sh
-> plant push-remote org-foo repo-bar --config '{"/absolute/path/to/my/evidence.ext":{"category":"foo"}}'
+plant push-remote https://github.com/org-foo/repo-bar --config '{"/absolute/path/to/my/evidence.ext":{"category":"foo"}}'
 ```
 
 ```sh
-> plant push-remote org-foo repo-bar --config-file ./path/to/my/config_file.json
+plant push-remote https://github.com/org-foo/repo-bar --config-file ./path/to/my/config_file.json
 ```
 
 ```sh
-> plant push-remote org-foo repo-bar --repo-path $TMPDIR"compliance" --config-file ./path/to/my/config_file.json
+plant push-remote https://github.com/org-foo/repo-bar --repo-path $TMPDIR"compliance" --config-file ./path/to/my/config_file.json
 ```
 
 ### dry-run mode
@@ -134,15 +141,15 @@ You can provide as many _evidence path_/_evidence detail_ key/value pairs as you
 need as part of the `--config` or as contents of your `--config-file`.
 
 ```sh
-> plant dry-run org-foo repo-bar --config '{"/absolute/path/to/my/evidence.ext":{"category":"foo"}}'
+plant dry-run https://github.com/org-foo/repo-bar --config '{"/absolute/path/to/my/evidence.ext":{"category":"foo"}}'
 ```
 
 ```sh
-> plant dry-run org-foo repo-bar --config-file ./path/to/my/config_file.json
+plant dry-run https://github.com/org-foo/repo-bar --config-file ./path/to/my/config_file.json
 ```
 
 ```sh
-> plant dry-run org-foo repo-bar --repo-path $TMPDIR"compliance" --config-file ./path/to/my/config_file.json
+plant dry-run https://github.com/org-foo/repo-bar --repo-path $TMPDIR"compliance" --config-file ./path/to/my/config_file.json
 ```
 
 
@@ -154,3 +161,5 @@ need as part of the `--config` or as contents of your `--config-file`.
 [pip-docs]: https://pip.pypa.io/en/stable/reference/pip/
 [virtual-env]: https://pypi.org/project/virtualenv/
 [auditree-framework]: https://github.com/ComplianceAsCode/auditree-framework
+[lint-test]: https://github.com/ComplianceAsCode/auditree-plant/actions?query=workflow%3A%22Test+python+code+%26+lint%22
+[pypi-upload]: https://github.com/ComplianceAsCode/auditree-plant/actions?query=workflow%3A%22Upload+Python+Package%22

@@ -18,25 +18,26 @@ import json
 import os
 import shutil
 import tempfile
+from urllib.parse import urlparse
 
 from compliance.evidence import ExternalEvidence, YEAR
+from compliance.utils.credentials import Config
 
 from ilcli import Command
 
 from plant import __version__ as version
 from plant.locker import PlantLocker
 
-from utilitarian import config_spec, credentials
-
 
 class _CorePlantCommand(Command):
 
     def _init_arguments(self):
         self.add_argument(
-            'org', help='the organization (owner) of a repository'
-        )
-        self.add_argument(
-            'repo', help='the name of a repository within an organization'
+            'locker',
+            help=(
+                'the URL to the evidence locker repository, '
+                'as an example https://github.com/my-org/my-repo'
+            )
         )
         self.add_argument(
             '--creds',
@@ -95,6 +96,12 @@ class _CorePlantCommand(Command):
         )
 
     def _validate_arguments(self, args):
+        parsed = urlparse(args.locker)
+        if not (parsed.scheme and parsed.hostname and parsed.path):
+            return (
+                'ERROR: locker url must be of the form '
+                'https://hostname/org/repo'
+            )
         if bool(args.config) == bool(args.config_file):
             return 'ERROR: Provide either a --config or a --config-file.'
         if args.git_config and args.git_config_file:
@@ -113,11 +120,7 @@ class _CorePlantCommand(Command):
         #   - dry-run translates to locker no-push mode
         #   - push-remote translates to locker full-remote mode
         locker_args = [
-            f'{args.org}/{args.repo}',
-            args.creds,
-            self.name,
-            gitconfig,
-            args.repo_path
+            args.locker, args.creds, self.name, gitconfig, args.repo_path
         ]
         files = args.config
         if not files:
@@ -154,8 +157,8 @@ class _CorePlantCommand(Command):
             )
         return PlantLocker(
             name=locker_name,
-            repo_url=f'https://github.ibm.com/{repo}',
-            creds=credentials.Config(creds, spec=config_spec.NullConfigSpec()),
+            repo_url=repo,
+            creds=Config(creds),
             do_push=True if mode == 'push-remote' else False,
             gitconfig=gitconfig,
             repo_path=repo_path
