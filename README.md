@@ -36,7 +36,7 @@ or
 python3 --version
 ```
 
-The `plant` tool is available for download from [PyPI](https://pypi.org/).
+The `plant` tool is available for download from [PyPI](https://pypi.org/project/auditree-plant/).
 
 ## Installation
 
@@ -161,5 +161,5 @@ plant dry-run https://github.com/org-foo/repo-bar --repo-path $TMPDIR"compliance
 [pip-docs]: https://pip.pypa.io/en/stable/reference/pip/
 [virtual-env]: https://pypi.org/project/virtualenv/
 [auditree-framework]: https://github.com/ComplianceAsCode/auditree-framework
-[lint-test]: https://github.com/ComplianceAsCode/auditree-plant/actions?query=workflow%3A%22Test+python+code+%26+lint%22
-[pypi-upload]: https://github.com/ComplianceAsCode/auditree-plant/actions?query=workflow%3A%22Upload+Python+Package%22
+[lint-test]: https://github.com/ComplianceAsCode/auditree-plant/actions?query=workflow%3A%22format+%7C+lint+%7C+test%22
+[pypi-upload]: https://github.com/ComplianceAsCode/auditree-plant/actions?query=workflow%3A%22PyPI+upload%22
