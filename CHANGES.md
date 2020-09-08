@@ -1,3 +1,3 @@
-# 1.0.0
+# 1.0.0 (2020-07-27)
 
-- [NEW] Make the Auditree Plant tool public.
+- [ADDED] Made the Auditree Plant tool public.
