@@ -32,7 +32,9 @@ class TestPlantCLI(unittest.TestCase):
         self.plant = Plant()
         self.grc_patcher = patch('git.Repo.clone_from')
         self.git_repo_clone_from_mock = self.grc_patcher.start()
-        self.git_remote_push_mock = MagicMock()
+        push_info_mock = MagicMock()
+        push_info_mock.flags = 0
+        self.git_remote_push_mock = MagicMock(return_value=[push_info_mock])
         git_remote_mock = MagicMock()
         git_remote_mock.push = self.git_remote_push_mock
         git_remotes_mock = MagicMock()
