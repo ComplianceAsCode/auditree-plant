@@ -1,4 +1,3 @@
-# -*- mode:python; coding:utf-8 -*-
 # Copyright (c) 2020 IBM Corp. All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -32,7 +31,7 @@ class PlantLocker(Locker):
         creds=None,
         do_push=False,
         gitconfig=None,
-        repo_path=None
+        repo_path=None,
     ):
         """Plant locker constructor to add external evidence."""
         super().__init__(
@@ -40,7 +39,7 @@ class PlantLocker(Locker):
             repo_url=repo_url,
             creds=creds,
             do_push=do_push,
-            gitconfig=gitconfig
+            gitconfig=gitconfig,
         )
         if repo_path is not None:
             self.local_path = os.path.normpath(repo_path)
@@ -49,12 +48,12 @@ class PlantLocker(Locker):
     def __exit__(self, exc_type, exc_val, exc_tb):
         """Override check in routine with a custom plant commit message."""
         if exc_type:
-            self.logger.error(' '.join([str(exc_type), str(exc_val)]))
-        planted_files = '\n'.join(self.planted)
+            self.logger.error(" ".join([str(exc_type), str(exc_val)]))
+        planted_files = "\n".join(self.planted)
         self.checkin(
             (
-                'Planted external evidence at local time '
-                f'{time.ctime(time.time())}\n\n{planted_files}'
+                "Planted external evidence at local time "
+                f"{time.ctime(time.time())}\n\n{planted_files}"
             )
         )
         if self.repo_url_with_creds:
@@ -73,14 +72,14 @@ class PlantLocker(Locker):
                 metadata = {}
             else:
                 metadata = json.loads(open(index_file).read())
-            planter = self.repo.config_reader().get_value('user', 'email')
+            planter = self.repo.config_reader().get_value("user", "email")
             metadata[evidence.name] = {
-                'last_update': self.commit_date,
-                'ttl': evidence.ttl,
-                'planted_by': planter,
-                'description': evidence.description
+                "last_update": self.commit_date,
+                "ttl": evidence.ttl,
+                "planted_by": planter,
+                "description": evidence.description,
             }
-            with open(index_file, 'w') as f:
+            with open(index_file, "w") as f:
                 f.write(format_json(metadata))
             self.repo.index.add([index_file, self.get_file(evidence.path)])
             self.planted.append(evidence.path)
