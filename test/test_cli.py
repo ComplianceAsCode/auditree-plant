@@ -208,7 +208,12 @@ class TestPlantCLI(unittest.TestCase):
         with patch("plant.cli.open", mock_open(read_data="{}")):
             self.plant.run(
                 self.dry_run
-                + ["--config", json.dumps(config), "--repo-path", "/tmp/meh"]
+                + [
+                    "--config",
+                    json.dumps(config),
+                    "--repo-path",
+                    "/tmp/meh",  # nosec B108: open is mocked so no real file.
+                ]
             )
         self.git_repo_clone_from_mock.assert_not_called()
         self.locker_init_config_mock.assert_called_once()
