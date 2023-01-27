@@ -36,13 +36,11 @@ class TestPlantCLI(unittest.TestCase):
         self.git_remote_push_mock = MagicMock(return_value=[push_info_mock])
         git_remote_mock = MagicMock()
         git_remote_mock.push = self.git_remote_push_mock
-        git_remotes_mock = MagicMock()
-        git_remotes_mock.__getitem__ = MagicMock(return_value=git_remote_mock)
         git_config_parser_mock = MagicMock()
         git_config_parser_mock.get_value = MagicMock(return_value="finkel")
         repo_mock = MagicMock()
         repo_mock.config_reader = MagicMock(return_value=git_config_parser_mock)
-        repo_mock.remotes = git_remotes_mock
+        repo_mock.remote.return_value = git_remote_mock
         self.git_repo_clone_from_mock.return_value = repo_mock
         self.lic_patcher = patch("compliance.locker.Locker.init_config")
         self.locker_init_config_mock = self.lic_patcher.start()
@@ -123,6 +121,7 @@ class TestPlantCLI(unittest.TestCase):
         self.git_repo_clone_from_mock.assert_called_once_with(
             "https://1a2b3c4d5e6f7g8h9i0@github.com/foo/bar",
             f"{tempfile.gettempdir()}/plant",
+            single_branch=True,
             branch="master",
         )
         self.locker_init_config_mock.assert_called_once()
@@ -139,6 +138,7 @@ class TestPlantCLI(unittest.TestCase):
         self.git_repo_clone_from_mock.assert_called_once_with(
             "https://1a2b3c4d5e6f7g8h9i0@github.com/foo/bar",
             f"{tempfile.gettempdir()}/plant",
+            single_branch=True,
             branch="master",
         )
         self.locker_init_config_mock.assert_called_once()
@@ -166,6 +166,7 @@ class TestPlantCLI(unittest.TestCase):
         self.git_repo_clone_from_mock.assert_called_once_with(
             "https://1a2b3c4d5e6f7g8h9i0@github.com/foo/bar",
             f"{tempfile.gettempdir()}/plant",
+            single_branch=True,
             branch="master",
         )
         self.locker_init_config_mock.assert_called_once()
@@ -191,6 +192,7 @@ class TestPlantCLI(unittest.TestCase):
         self.git_repo_clone_from_mock.assert_called_once_with(
             "https://1a2b3c4d5e6f7g8h9i0@github.com/foo/bar",
             f"{tempfile.gettempdir()}/plant",
+            single_branch=True,
             branch="master",
         )
         self.locker_init_config_mock.assert_called_once()
@@ -234,6 +236,7 @@ class TestPlantCLI(unittest.TestCase):
         self.git_repo_clone_from_mock.assert_called_once_with(
             "https://1a2b3c4d5e6f7g8h9i0@github.com/foo/bar",
             f"{tempfile.gettempdir()}/plant",
+            single_branch=True,
             branch="master",
         )
         self.locker_init_config_mock.assert_called_once()
