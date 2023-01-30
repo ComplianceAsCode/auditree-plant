@@ -1,4 +1,3 @@
-# -*- mode:python; coding:utf-8 -*-
 # Copyright (c) 2020 IBM Corp. All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -30,38 +29,34 @@ class TestPlantCLI(unittest.TestCase):
         """Initialize supporting test objects before each test."""
         logging.disable(logging.CRITICAL)
         self.plant = Plant()
-        self.grc_patcher = patch('git.Repo.clone_from')
+        self.grc_patcher = patch("git.Repo.clone_from")
         self.git_repo_clone_from_mock = self.grc_patcher.start()
         push_info_mock = MagicMock()
         push_info_mock.flags = 0
         self.git_remote_push_mock = MagicMock(return_value=[push_info_mock])
         git_remote_mock = MagicMock()
         git_remote_mock.push = self.git_remote_push_mock
-        git_remotes_mock = MagicMock()
-        git_remotes_mock.__getitem__ = MagicMock(return_value=git_remote_mock)
         git_config_parser_mock = MagicMock()
-        git_config_parser_mock.get_value = MagicMock(return_value='finkel')
+        git_config_parser_mock.get_value = MagicMock(return_value="finkel")
         repo_mock = MagicMock()
-        repo_mock.config_reader = MagicMock(
-            return_value=git_config_parser_mock
-        )
-        repo_mock.remotes = git_remotes_mock
+        repo_mock.config_reader = MagicMock(return_value=git_config_parser_mock)
+        repo_mock.remote.return_value = git_remote_mock
         self.git_repo_clone_from_mock.return_value = repo_mock
-        self.lic_patcher = patch('compliance.locker.Locker.init_config')
+        self.lic_patcher = patch("compliance.locker.Locker.init_config")
         self.locker_init_config_mock = self.lic_patcher.start()
-        self.lci_patcher = patch('compliance.locker.Locker.checkin')
+        self.lci_patcher = patch("compliance.locker.Locker.checkin")
         self.locker_checkin_mock = self.lci_patcher.start()
-        self.lae_patcher = patch('compliance.locker.Locker.add_evidence')
+        self.lae_patcher = patch("compliance.locker.Locker.add_evidence")
         self.locker_add_evidence_mock = self.lae_patcher.start()
-        self.srm_patcher = patch('plant.cli.shutil.rmtree')
+        self.srm_patcher = patch("plant.cli.shutil.rmtree")
         self.shutil_rmtree_mock = self.srm_patcher.start()
         self.dry_run = [
-            'dry-run',
-            'https://github.com/foo/bar',
-            '--creds',
-            './test/fixtures/faux_creds.ini'
+            "dry-run",
+            "https://github.com/foo/bar",
+            "--creds",
+            "./test/fixtures/faux_creds.ini",
         ]
-        self.push_remote = ['push-remote'] + self.dry_run[1:]
+        self.push_remote = ["push-remote"] + self.dry_run[1:]
 
     def tearDown(self):
         """Cleanup supporting test objects after each test."""
@@ -85,11 +80,12 @@ class TestPlantCLI(unittest.TestCase):
     def test_multiple_config_validation(self):
         """Ensures processing stops when both config and path provided."""
         self.plant.run(
-            self.push_remote + [
-                '--config',
-                json.dumps({'foo': 'bar'}),
-                '--config-file',
-                'foo/bar/baz_cfg.json'
+            self.push_remote
+            + [
+                "--config",
+                json.dumps({"foo": "bar"}),
+                "--config-file",
+                "foo/bar/baz_cfg.json",
             ]
         )
         self.git_repo_clone_from_mock.assert_not_called()
@@ -102,11 +98,12 @@ class TestPlantCLI(unittest.TestCase):
     def test_multiple_git_config_validation(self):
         """Ensures processing stops when both git-config and path provided."""
         self.plant.run(
-            self.push_remote + [
-                '--git-config',
-                json.dumps({'foo': 'bar'}),
-                '--git-config-file',
-                'foo/bar/baz_cfg.json'
+            self.push_remote
+            + [
+                "--git-config",
+                json.dumps({"foo": "bar"}),
+                "--git-config-file",
+                "foo/bar/baz_cfg.json",
             ]
         )
         self.git_repo_clone_from_mock.assert_not_called()
@@ -118,17 +115,14 @@ class TestPlantCLI(unittest.TestCase):
 
     def test_dry_run_config(self):
         """Ensures dry-run mode works when config JSON is provided."""
-        config = {
-            '/home/foo/bar.json': {
-                'category': 'foo', 'description': 'meh'
-            }
-        }
-        with patch('plant.cli.open', mock_open(read_data='{}')):
-            self.plant.run(self.dry_run + ['--config', json.dumps(config)])
+        config = {"/home/foo/bar.json": {"category": "foo", "description": "meh"}}
+        with patch("plant.cli.open", mock_open(read_data="{}")):
+            self.plant.run(self.dry_run + ["--config", json.dumps(config)])
         self.git_repo_clone_from_mock.assert_called_once_with(
-            'https://1a2b3c4d5e6f7g8h9i0@github.com/foo/bar',
-            f'{tempfile.gettempdir()}/plant',
-            branch='master'
+            "https://1a2b3c4d5e6f7g8h9i0@github.com/foo/bar",
+            f"{tempfile.gettempdir()}/plant",
+            single_branch=True,
+            branch="master",
         )
         self.locker_init_config_mock.assert_called_once()
         self.locker_add_evidence_mock.assert_called_once()
@@ -137,14 +131,15 @@ class TestPlantCLI(unittest.TestCase):
 
     def test_dry_run_config_file(self):
         """Ensures dry-run mode works when a config file is provided."""
-        config_file = './test/fixtures/faux_config.json'
+        config_file = "./test/fixtures/faux_config.json"
         config_content = open(config_file).read()
-        with patch('plant.cli.open', mock_open(read_data=config_content)):
-            self.plant.run(self.dry_run + ['--config-file', config_file])
+        with patch("plant.cli.open", mock_open(read_data=config_content)):
+            self.plant.run(self.dry_run + ["--config-file", config_file])
         self.git_repo_clone_from_mock.assert_called_once_with(
-            'https://1a2b3c4d5e6f7g8h9i0@github.com/foo/bar',
-            f'{tempfile.gettempdir()}/plant',
-            branch='master'
+            "https://1a2b3c4d5e6f7g8h9i0@github.com/foo/bar",
+            f"{tempfile.gettempdir()}/plant",
+            single_branch=True,
+            branch="master",
         )
         self.locker_init_config_mock.assert_called_once()
         self.locker_add_evidence_mock.assert_called_once()
@@ -153,32 +148,26 @@ class TestPlantCLI(unittest.TestCase):
 
     def test_dry_run_git_config(self):
         """Ensures dry-run mode works when a git config is provided."""
-        config = {
-            '/home/foo/bar.json': {
-                'category': 'foo', 'description': 'meh'
-            }
-        }
+        config = {"/home/foo/bar.json": {"category": "foo", "description": "meh"}}
         git_config = {
-            'commit': {
-                'gpgsign': True
-            },
-            'user': {
-                'signingKey': '...', 'email': '...', 'name': '...'
-            }
+            "commit": {"gpgsign": True},
+            "user": {"signingKey": "...", "email": "...", "name": "..."},
         }
-        with patch('plant.cli.open', mock_open(read_data='{}')):
+        with patch("plant.cli.open", mock_open(read_data="{}")):
             self.plant.run(
-                self.dry_run + [
-                    '--config',
+                self.dry_run
+                + [
+                    "--config",
                     json.dumps(config),
-                    '--git-config',
-                    json.dumps(git_config)
+                    "--git-config",
+                    json.dumps(git_config),
                 ]
             )
         self.git_repo_clone_from_mock.assert_called_once_with(
-            'https://1a2b3c4d5e6f7g8h9i0@github.com/foo/bar',
-            f'{tempfile.gettempdir()}/plant',
-            branch='master'
+            "https://1a2b3c4d5e6f7g8h9i0@github.com/foo/bar",
+            f"{tempfile.gettempdir()}/plant",
+            single_branch=True,
+            branch="master",
         )
         self.locker_init_config_mock.assert_called_once()
         self.locker_add_evidence_mock.assert_called_once()
@@ -187,47 +176,46 @@ class TestPlantCLI(unittest.TestCase):
 
     def test_dry_run_git_config_file(self):
         """Ensures dry-run mode works when a git config file is provided."""
-        config = {
-            '/home/foo/bar.json': {
-                'category': 'foo', 'description': 'meh'
-            }
-        }
-        git_config_file = './test/fixtures/faux_git_config.json'
+        config = {"/home/foo/bar.json": {"category": "foo", "description": "meh"}}
+        git_config_file = "./test/fixtures/faux_git_config.json"
         git_config_content = open(git_config_file).read()
-        with patch('plant.cli.open', mock_open(read_data=git_config_content)):
+        with patch("plant.cli.open", mock_open(read_data=git_config_content)):
             self.plant.run(
-                self.dry_run + [
-                    '--config',
+                self.dry_run
+                + [
+                    "--config",
                     json.dumps(config),
-                    '--git-config-file',
-                    './test/fixtures/faux_git_config.json'
+                    "--git-config-file",
+                    "./test/fixtures/faux_git_config.json",
                 ]
             )
         self.git_repo_clone_from_mock.assert_called_once_with(
-            'https://1a2b3c4d5e6f7g8h9i0@github.com/foo/bar',
-            f'{tempfile.gettempdir()}/plant',
-            branch='master'
+            "https://1a2b3c4d5e6f7g8h9i0@github.com/foo/bar",
+            f"{tempfile.gettempdir()}/plant",
+            single_branch=True,
+            branch="master",
         )
         self.locker_init_config_mock.assert_called_once()
         self.locker_add_evidence_mock.assert_called_once()
         self.git_remote_push_mock.assert_not_called()
         self.shutil_rmtree_mock.assert_not_called()
 
-    @patch('git.Repo')
-    @patch('os.path.isdir')
+    @patch("git.Repo")
+    @patch("os.path.isdir")
     def test_repo_path(self, isdir_mock, repo_mock):
         """Ensures providing a repo path does not clone a remote repo."""
         isdir_mock.return_value = True
-        repo_mock.return_value = 'REPO'
-        config = {
-            '/home/foo/bar.json': {
-                'category': 'foo', 'description': 'meh'
-            }
-        }
-        with patch('plant.cli.open', mock_open(read_data='{}')):
+        repo_mock.return_value = "REPO"
+        config = {"/home/foo/bar.json": {"category": "foo", "description": "meh"}}
+        with patch("plant.cli.open", mock_open(read_data="{}")):
             self.plant.run(
                 self.dry_run
-                + ['--config', json.dumps(config), '--repo-path', '/tmp/meh']
+                + [
+                    "--config",
+                    json.dumps(config),
+                    "--repo-path",
+                    "/tmp/meh",  # nosec B108: open is mocked so no real file.
+                ]
             )
         self.git_repo_clone_from_mock.assert_not_called()
         self.locker_init_config_mock.assert_called_once()
@@ -242,17 +230,14 @@ class TestPlantCLI(unittest.TestCase):
         No other tests needed for push-remote since push-remote and dry-run
         use the same core plant command logic.
         """
-        config = {
-            '/home/foo/bar.json': {
-                'category': 'foo', 'description': 'meh'
-            }
-        }
-        with patch('plant.cli.open', mock_open(read_data='{}')):
-            self.plant.run(self.push_remote + ['--config', json.dumps(config)])
+        config = {"/home/foo/bar.json": {"category": "foo", "description": "meh"}}
+        with patch("plant.cli.open", mock_open(read_data="{}")):
+            self.plant.run(self.push_remote + ["--config", json.dumps(config)])
         self.git_repo_clone_from_mock.assert_called_once_with(
-            'https://1a2b3c4d5e6f7g8h9i0@github.com/foo/bar',
-            f'{tempfile.gettempdir()}/plant',
-            branch='master'
+            "https://1a2b3c4d5e6f7g8h9i0@github.com/foo/bar",
+            f"{tempfile.gettempdir()}/plant",
+            single_branch=True,
+            branch="master",
         )
         self.locker_init_config_mock.assert_called_once()
         self.locker_add_evidence_mock.assert_called_once()
