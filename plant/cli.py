@@ -21,6 +21,7 @@ from urllib.parse import urlparse
 
 from compliance.evidence import ExternalEvidence, YEAR
 from compliance.utils.credentials import Config
+from compliance.config import get_config
 
 from ilcli import Command
 
@@ -36,6 +37,11 @@ class _CorePlantCommand(Command):
                 "the URL to the evidence locker repository, "
                 "as an example https://github.com/my-org/my-repo"
             ),
+        )
+        self.add_argument(
+            '--branch',
+            help="Branch name for locker repository",
+            default=False
         )
         self.add_argument(
             "--creds",
@@ -106,6 +112,10 @@ class _CorePlantCommand(Command):
         gitconfig = None
         if args.git_config or args.git_config_file:
             gitconfig = args.git_config or json.loads(open(args.git_config_file).read())
+        if args.branch:
+            c = get_config()
+            c.load()
+            c.raw_config["locker"]["default_branch"] = args.branch
         # self.name drives the Locker push mode.
         #   - dry-run translates to locker no-push mode
         #   - push-remote translates to locker full-remote mode
