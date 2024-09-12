@@ -39,9 +39,7 @@ class _CorePlantCommand(Command):
             ),
         )
         self.add_argument(
-            '--branch',
-            help="Branch name for locker repository",
-            default=False
+            "--branch", help="Branch name for locker repository", default=False
         )
         self.add_argument(
             "--creds",
